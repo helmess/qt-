@@ -86,11 +86,13 @@
     <QtRcc Include="UpperMoniter.qrc" />
     <QtUic Include="UpperMoniter.ui" />
     <QtMoc Include="UpperMoniter.h" />
+    <ClCompile Include="DeviceData.cpp" />
     <ClCompile Include="DeviceStatus.cpp" />
     <ClCompile Include="UpperMoniter.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeviceData.h" />
     <ClInclude Include="DeviceStatus.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

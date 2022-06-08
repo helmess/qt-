@@ -10,61 +10,33 @@ void UpperMoniter::serial_connect()
 {
 }
 
-string UpperMoniter::get_device_ascii(string query_code)
+unsigned char * UpperMoniter::serial_read()
 {
-	return string();
+	return nullptr;
 }
 
-DeviceStatus UpperMoniter::parse_ascii(string str)
+DeviceStatus UpperMoniter::parse_ascii(unsigned char * data)
 {
+	for (int i = 0; i < sizeof(data); ++i)      //È¥³ý'\0'
+		if (data[i] == 0x00)
+			data[i] = 0xff;
+
+	std::string b((char *)(data));
+	DeviceData a(b);
 	DeviceStatus device;
-	device.setDate(parse_Date("32 30 32 32 2E 30 35 2E 32 30 20 20 20 31 34 3A \
-		32 36 3A 33 37 20 20 20 30 31 30 30 31 30 30 30"));
+	device.setDate(a.Date);
+	device.setDeviceAddres(a.DeviceAddress);
+	device.setEvent(a.Event);
+	device.setEventDescription(a.EventDescription);
+	device.setLoop(a.Loop);
+	device.setNetaddress(a.NetAddress);
+	device.setTime(a.Time);
+
+	m_dvec.push_back(device);
 
 	return device;
 }
 
-string UpperMoniter::parse_Event(string str)
-{
-	return string();
-}
-
-string UpperMoniter::parse_EventDescription(string str)
-{
-	return string();
-}
-
-string UpperMoniter::parse_Netaddress(string str)
-{
-	return string();
-}
-
-string UpperMoniter::parse_Loop(string str)
-{
-	return string();
-}
-
-string UpperMoniter::parse_DeviceAddres(string str)
-{
-	return string();
-}
-
-string UpperMoniter::parse_DeviceCoding(string str)
-{
-	return string();
-}
-
-string UpperMoniter::parse_Date(string str)
-{
-
-
-	return string();
-}
-
-string UpperMoniter::parse_Time(string str)
-{
-	return string();
-}
 
 void UpperMoniter::export_all_device()
 {

@@ -4,6 +4,7 @@
 #include "ui_UpperMoniter.h"
 #include<vector>
 #include"DeviceStatus.h"
+#include"DeviceData.h"
 using namespace std;
 
 
@@ -19,22 +20,16 @@ public:
 
 public :
 	void serial_connect();//串口链接
-	string get_device_ascii(string query_code);
-	DeviceStatus parse_ascii(string str);//数据解析，解析接收的数据为一个设备实例
-	string parse_Event(string str);
-	string parse_EventDescription(string str);
-	string parse_Netaddress(string str);
-	string parse_Loop(string str);
-	string parse_DeviceAddres(string str);
-	string parse_DeviceCoding(string str);
-	string parse_Date(string str);
-	string parse_Time(string str);
+	unsigned char * serial_read();
+
+	DeviceStatus parse_ascii(unsigned char * data);//数据解析，解析接收的数据为一个设备实例
+	
 	void export_all_device();//导出数据
 	void display_all_device();//显示所有设备数据
 
 public:
-	DeviceVec dvec;
-
+	DeviceVec m_dvec;
+	unsigned char *m_serial_data;
 
 private:
     Ui::UpperMoniterClass ui;
