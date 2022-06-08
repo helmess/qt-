@@ -16,10 +16,11 @@ class UpperMoniter : public QMainWindow
 
 public:
     UpperMoniter(QWidget *parent = Q_NULLPTR);
-
+	public slots:
+	void serial_connect();//串口链接
 
 public :
-	void serial_connect();//串口链接
+	
 	unsigned char * serial_read();
 
 	DeviceStatus parse_ascii(unsigned char * data);//数据解析，解析接收的数据为一个设备实例
