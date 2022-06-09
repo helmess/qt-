@@ -64,30 +64,6 @@ QComboBox {
     background: transparent;
 }
  
-/* 下拉后，整个下拉窗体样式 */
-QComboBox QAbstractItemView {
-    outline: 0px solid gray;   /* 选定项的虚框 */
-    border: 1px solid #999999;   /* 整个下拉窗体的边框 */
-    color: transparent;
-
-}
- 
-/* 下拉后，整个下拉窗体每项的样式 */
-QComboBox QAbstractItemView::item {
-    height: 50px;   /* 项的高度（设置pComboBox->setView(new QListView());后，该项才起作用） */
-}
- 
-/* 下拉后，整个下拉窗体越过每项的样式 */
-QComboBox QAbstractItemView::item:hover {
-    color: #FFFFFF;
-    background-color: #FFFFFF;   /* 整个下拉窗体越过每项的背景色 */
-}
- 
-/* 下拉后，整个下拉窗体被选择的每项的样式 */
-QComboBox QAbstractItemView::item:selected {
-    color: #FFFFFF;
-    background-color: #FFFFFF;
-}
 QComboBox down-arrow {
     color: #selected;
     background-color: #FFFFFF;   /* 整个下拉窗体越过每项的背景色 */
@@ -165,23 +141,15 @@ QPushButton {
 	border-image:url("img/button.png")
 }
 
-QPushButton:hover{
-/*
-    background-color: #8BF;
-    border-color: #59F;
-	*/
+QPushButton:checked
+{
 	border-image:url("img/hover.png")
 }
-
-QPushButton:pressed
+QPushButton:unchecked
 {
-/*
-    border-width: 1px;      
-    background-color: #59F;
-    border-color: #999999;
-	*/
-	border-image:url("img/press.png")
+	border-image:url("img/button.png")
 }
+
 
 QPushButton:focus, QPushButton:default {
     border-color: #EA2; /* make the default button prominent */

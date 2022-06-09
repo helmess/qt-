@@ -16,9 +16,9 @@ class UpperMoniter : public QMainWindow
 
 public:
     UpperMoniter(QWidget *parent = Q_NULLPTR);
-	public slots:
+public slots:
 	void serial_connect();//´®¿ÚÁ´½Ó
-
+	void getFileName();
 public :
 	
 	unsigned char * serial_read();
