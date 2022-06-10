@@ -30,19 +30,37 @@ void UpperMoniter::getFileName() {
 void UpperMoniter::serial_connect()
 {
 	QString Serial = ui.serialComboBox->currentText();
-	QString BaudRate = ui.baudRateComboBox->currentText();
+	int BaudRate = ui.baudRateComboBox->currentText().toInt();
+	if (m_serialPort == nullptr)
+		m_serialPort = new QSerialPort(); //实例化串口类一个对象
+	m_serialPort->setPortName(Serial);
+	
 	if (ui.openSerialPushButton->isCheckable())
 	{
 		//打开串口
 		if (ui.openSerialPushButton->isChecked())
 		{
 			/*插入代码*/
+			if(!m_serialPort->open(QIODevice::ReadWrite))//用ReadWrite 的模式尝试打开串口
+			{
+				qDebug()<<m_serialPortName[0]<<"打开失败!";
+				return;
+			}
+			m_serialPort->setBaudRate(BaudRate,QSerialPort::AllDirections);//设置波特率和读写方向
+			m_serialPort->setDataBits(QSerialPort::Data8);      //数据位为8位
+			m_serialPort->setFlowControl(QSerialPort::NoFlowControl);//无流控制
+			m_serialPort->setParity(QSerialPort::NoParity); //无校验位
+			m_serialPort->setStopBits(QSerialPort::OneStop); //一位停止位
+
+			connect(m_serialPort,SIGNAL(readyRead()),this,SLOT(serial_read()));
+
 			ui.openSerialPushButton->setText(QStringLiteral("打开串口"));
 		}
 		//关闭串口
 		else
 		{
 			/*插入代码*/
+			m_serialPort->close();
 			ui.openSerialPushButton->setText(QStringLiteral("关闭串口"));
 		}
 
@@ -51,19 +69,36 @@ void UpperMoniter::serial_connect()
 	//QMessageBox::about(NULL, "tip", "ok");
 }
 
-unsigned char * UpperMoniter::serial_read()
+void UpperMoniter::serial_read()
 {
-	return nullptr;
+	QByteArray info = m_serialPort->readAll();
+	hexData += info.toHex();
+	for (int i = 0; i < hexData.size(); ++i)      //去除'\0'
+		if (hexData[i] == 0x00)
+			hexData[i] = 0xff;
+	std::string strbuf((char *)(hexData));
+
+	QString qstr = QString::fromStdString(strbuf);
+	QStringList qsl = qstr.split("\r\n");		//划分数据白  ‘0x0d 0x0a’
+	
+	for(int i = 0; i< qsl.size();++i)	
+	{
+		QString data = qsl.at(i);
+		qDebug()<<"data ="<< data<<"\r\n"; 
+	}
+	parse_ascii(data.toStdString())
+
+
 }
 
-DeviceStatus UpperMoniter::parse_ascii(unsigned char * data)
+DeviceStatus UpperMoniter::parse_ascii(string data)
 {
-	for (int i = 0; i < sizeof(data); ++i)      //去除'\0'
-		if (data[i] == 0x00)
-			data[i] = 0xff;
+	// for (int i = 0; i < sizeof(data); ++i)      //去除'\0'
+	// 	if (data[i] == 0x00)
+	// 		data[i] = 0xff;
 
-	std::string b((char *)(data));
-	DeviceData a(b);
+	// std::string b((char *)(data));
+	DeviceData a(data);
 	DeviceStatus device;
 	device.setDate(a.Date);
 	device.setDeviceAddres(a.DeviceAddress);
