@@ -76,9 +76,10 @@ void UpperMoniter::serial_read()
 	for (int i = 0; i < hexData.size(); ++i)      //去除'\0'
 		if (hexData[i] == 0x00)
 			hexData[i] = 0xff;
-	std::string strbuf((char *)(hexData));
+	// std::string strbuf((char *)(hexData.data()));
 
-	QString qstr = QString::fromStdString(strbuf);
+	// QString qstr = QString::fromStdString(strbuf);
+	QString qstr = hexData;
 	QStringList qsl = qstr.split("\r\n");		//划分数据白  ‘0x0d 0x0a’
 	
 	for(int i = 0; i< qsl.size();++i)	
