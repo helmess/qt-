@@ -74,9 +74,9 @@ void UpperMoniter::serial_read()
 	QByteArray info = m_serialPort->readAll();
 	QByteArray hexData = info.toHex();
 	for (int i = 0; i < hexData.size(); ++i)      //去除'\0'
-		if (hexData[i] == 0x00)
+		if (char(hexData[i]) == 0x00)
 			hexData[i] = 0xff;
-	std::string strbuf((char *)(hexData));
+	std::string strbuf=hexData.toStdString();
 
 	QString qstr = QString::fromStdString(strbuf);
 	QStringList qsl = qstr.split("\r\n");		//划分数据白  ‘0x0d 0x0a’
@@ -84,7 +84,7 @@ void UpperMoniter::serial_read()
 	for(int i = 0; i< qsl.size();++i)	
 	{
 		QString data = qsl.at(i);
-		parse_ascii(data.toStdString())
+		parse_ascii(data.toStdString());
 		qDebug()<<"data ="<< data<<"\r\n"; 
 	}
 	
