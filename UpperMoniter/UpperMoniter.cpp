@@ -1,6 +1,38 @@
 #include "UpperMoniter.h"
 #include<qmessagebox.h>
 #include<qfiledialog.h>
+
+QStringList get_avail_sp_() noexcept
+{
+	QStringList list_avail_sp;
+
+	foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+	{
+		QSerialPort serial;
+		serial.setPort(info);
+		if (serial.open(QIODevice::ReadWrite))
+		{
+			list_avail_sp.append(serial.portName());
+			serial.close();
+		}
+	}
+
+	return list_avail_sp;
+}
+
+
+void printdevice(DeviceStatus device)
+{
+	cout << device.getDate() << endl;
+	cout << device.getDeviceAddress() << endl;
+	cout << device.getDeviceCoding() << endl;
+	cout << device.getEvent() << endl;
+	cout << device.getEventDescription() << endl;
+	cout << device.getLoop() << endl;
+	cout << device.getNetaddress() << endl;
+	cout << device.getTime() << endl;
+
+}
 UpperMoniter::UpperMoniter(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -12,12 +44,18 @@ UpperMoniter::UpperMoniter(QWidget *parent)
 	ui.baudRateComboBox->addItems(QStringList() << tr("115200") << tr("9600"));
 	ui.openSerialPushButton->setCheckable(true);
 	ui.openSerialPushButton->setChecked(false);
-	ui.openSerialPushButton->setText(QStringLiteral("关闭串口"));
+	ui.openSerialPushButton->setText(QStringLiteral("打开串口"));
+	m_serialPort = new QSerialPort(); //实例化串口类一个对象
 	connect(ui.openSerialPushButton, SIGNAL(clicked()), this, SLOT(serial_connect()));//打开串口
 	connect(ui.queryPushButton, SIGNAL(clicked()), this, SLOT());//点击查询按钮
 	connect(ui.exportPushButton, SIGNAL(clicked()), this, SLOT(getFileName()) );//点击导出按钮
+	connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(serial_read()));
+
+	ui.serialComboBox->addItems(get_avail_sp_());
 
 }
+
+
 void UpperMoniter::getFileName() {
 	QString curPath = QCoreApplication::applicationDirPath();
 	QString aFileName = QFileDialog::getOpenFileName(this, u8"选择文件", curPath, tr(";;All file(*.*)"));
@@ -31,8 +69,8 @@ void UpperMoniter::serial_connect()
 {
 	QString Serial = ui.serialComboBox->currentText();
 	int BaudRate = ui.baudRateComboBox->currentText().toInt();
-	if (m_serialPort == nullptr)
-		m_serialPort = new QSerialPort(); //实例化串口类一个对象
+
+	
 	m_serialPort->setPortName(Serial);
 	
 	if (ui.openSerialPushButton->isCheckable())
@@ -51,17 +89,17 @@ void UpperMoniter::serial_connect()
 			m_serialPort->setFlowControl(QSerialPort::NoFlowControl);//无流控制
 			m_serialPort->setParity(QSerialPort::NoParity); //无校验位
 			m_serialPort->setStopBits(QSerialPort::OneStop); //一位停止位
+			
+			
 
-			connect(m_serialPort,SIGNAL(readyRead()),this,SLOT(serial_read()));
-
-			ui.openSerialPushButton->setText(QStringLiteral("打开串口"));
+			ui.openSerialPushButton->setText(QStringLiteral("关闭串口"));
 		}
 		//关闭串口
 		else
 		{
 			/*插入代码*/
 			m_serialPort->close();
-			ui.openSerialPushButton->setText(QStringLiteral("关闭串口"));
+			ui.openSerialPushButton->setText(QStringLiteral("打开串口"));
 		}
 
 	}
@@ -71,8 +109,9 @@ void UpperMoniter::serial_connect()
 
 void UpperMoniter::serial_read()
 {
-	QByteArray info = m_serialPort->readAll();
-	QByteArray hexData = info.toHex();
+	QByteArray hexData = m_serialPort->readAll();
+	
+	cout << hexData.toStdString() << endl;
 	for (int i = 0; i < hexData.size(); ++i)      //去除'\0'
 		if (char(hexData[i]) == 0x00)
 			hexData[i] = 0xff;
@@ -106,11 +145,12 @@ DeviceStatus UpperMoniter::parse_ascii(string data)
 	device.setLoop(a.Loop);
 	device.setNetaddress(a.NetAddress);
 	device.setTime(a.Time);
-
+	printdevice(device);
 	m_dvec.push_back(device);
 
 	return device;
 }
+
 
 
 void UpperMoniter::export_all_device()

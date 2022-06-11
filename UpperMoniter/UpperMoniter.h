@@ -22,9 +22,10 @@ public:
 public slots:
 	void serial_connect();//串口链接
 	void getFileName();
+	void serial_read();
 public :
 	
-	void serial_read();
+	
 
 	DeviceStatus parse_ascii(string data);//数据解析，解析接收的数据为一个设备实例
 	
