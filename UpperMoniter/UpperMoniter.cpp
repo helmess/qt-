@@ -43,7 +43,7 @@ void UpperMoniter::serial_connect()
 			/*插入代码*/
 			if(!m_serialPort->open(QIODevice::ReadWrite))//用ReadWrite 的模式尝试打开串口
 			{
-				qDebug()<<m_serialPortName[0]<<"打开失败!";
+				qDebug()<<Serial<<"打开失败!";
 				return;
 			}
 			m_serialPort->setBaudRate(BaudRate,QSerialPort::AllDirections);//设置波特率和读写方向
@@ -72,7 +72,7 @@ void UpperMoniter::serial_connect()
 void UpperMoniter::serial_read()
 {
 	QByteArray info = m_serialPort->readAll();
-	hexData += info.toHex();
+	QByteArray hexData = info.toHex();
 	for (int i = 0; i < hexData.size(); ++i)      //去除'\0'
 		if (hexData[i] == 0x00)
 			hexData[i] = 0xff;
@@ -84,11 +84,10 @@ void UpperMoniter::serial_read()
 	for(int i = 0; i< qsl.size();++i)	
 	{
 		QString data = qsl.at(i);
+		parse_ascii(data.toStdString())
 		qDebug()<<"data ="<< data<<"\r\n"; 
 	}
-	parse_ascii(data.toStdString())
-
-
+	
 }
 
 DeviceStatus UpperMoniter::parse_ascii(string data)
