@@ -12,7 +12,9 @@ int main(int argc, char *argv[])
 		a.setStyleSheet(strFile);
 		file.close();
 	}
-    UpperMoniter w;
+	UpperMoniter w;
+	string str = "Ò»¶þÈý";
+	w.m_dvec.push_back(DeviceStatus(str, str, str, str, str, str, str));
     w.show();
 
 

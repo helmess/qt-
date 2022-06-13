@@ -1,4 +1,4 @@
-#include "UpperMoniter.h"
+ï»¿#include "UpperMoniter.h"
 #include<qmessagebox.h>
 #include<qfiledialog.h>
 
@@ -38,17 +38,17 @@ UpperMoniter::UpperMoniter(QWidget *parent)
 {
     ui.setupUi(this);
 	QStringList tableHead;
-	tableHead << u8"ÈÕÆÚ" << u8"Ê±¼ä" << u8"ÊÂ¼ş" << u8"ÊÂ¼şÃèÊö" << u8"ÍøÂçµØÖ·" << u8"»ØÂ·" << u8"Éè±¸µØÖ·";
+	tableHead << u8"æ—¥æœŸ" << u8"æ—¶é—´" << u8"äº‹ä»¶" << u8"äº‹ä»¶æè¿°" << u8"ç½‘ç»œåœ°å€" << u8"å›è·¯" << u8"è®¾å¤‡åœ°å€";
 	ui.deviceStatusTableWidget->setColumnCount(7);
 	ui.deviceStatusTableWidget->setHorizontalHeaderLabels(tableHead);
 	ui.baudRateComboBox->addItems(QStringList() << tr("115200") << tr("9600"));
 	ui.openSerialPushButton->setCheckable(true);
 	ui.openSerialPushButton->setChecked(false);
-	ui.openSerialPushButton->setText(QStringLiteral("´ò¿ª´®¿Ú"));
-	m_serialPort = new QSerialPort(); //ÊµÀı»¯´®¿ÚÀàÒ»¸ö¶ÔÏó
-	connect(ui.openSerialPushButton, SIGNAL(clicked()), this, SLOT(serial_connect()));//´ò¿ª´®¿Ú
-	connect(ui.queryPushButton, SIGNAL(clicked()), this, SLOT(queryAndDisplay()));//µã»÷²éÑ¯°´Å¥
-	connect(ui.exportPushButton, SIGNAL(clicked()), this, SLOT(getFileName()) );//µã»÷µ¼³ö°´Å¥
+	ui.openSerialPushButton->setText(QStringLiteral("æ‰“å¼€ä¸²å£"));
+	m_serialPort = new QSerialPort(); //å®ä¾‹åŒ–ä¸²å£ç±»ä¸€ä¸ªå¯¹è±¡
+	connect(ui.openSerialPushButton, SIGNAL(clicked()), this, SLOT(serial_connect()));//æ‰“å¼€ä¸²å£
+	connect(ui.queryPushButton, SIGNAL(clicked()), this, SLOT(queryAndDisplay()));//ç‚¹å‡»æŸ¥è¯¢æŒ‰é’®
+	connect(ui.exportPushButton, SIGNAL(clicked()), this, SLOT(getFileName()) );//ç‚¹å‡»å¯¼å‡ºæŒ‰é’®
 	connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(serial_read()));
 
 	ui.serialComboBox->addItems(get_avail_sp_());
@@ -56,28 +56,28 @@ UpperMoniter::UpperMoniter(QWidget *parent)
 }
 
 void UpperMoniter::queryAndDisplay() {
-	/*Çå³ıµ±Ç°±í¸ñÄÚÈİ*/
+	/*æ¸…é™¤å½“å‰è¡¨æ ¼å†…å®¹*/
 	ui.deviceStatusTableWidget->clearContents();
 	ui.deviceStatusTableWidget->setRowCount(m_dvec.size());
 	for (int i = 0; i < m_dvec.size(); i++) {
-		ui.deviceStatusTableWidget->setItem(i, 0, new QTableWidgetItem(tr(m_dvec[i].Date.c_str())));
-		ui.deviceStatusTableWidget->setItem(i, 1, new QTableWidgetItem(tr(m_dvec[i].Time.c_str())));
-		ui.deviceStatusTableWidget->setItem(i, 2, new QTableWidgetItem(tr(m_dvec[i].Event.c_str())));
-		ui.deviceStatusTableWidget->setItem(i, 3, new QTableWidgetItem(tr(m_dvec[i].EventDescription.c_str())));
-		ui.deviceStatusTableWidget->setItem(i, 4, new QTableWidgetItem(tr(m_dvec[i].Netaddress.c_str())));
-		ui.deviceStatusTableWidget->setItem(i, 5, new QTableWidgetItem(tr(m_dvec[i].Loop.c_str())));
-		ui.deviceStatusTableWidget->setItem(i, 6, new QTableWidgetItem(tr(m_dvec[i].DeviceAddress.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].Date.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 1, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].Time.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 2, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].Event.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 3, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].EventDescription.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 4, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].Netaddress.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 5, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].Loop.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 6, new QTableWidgetItem(QString::fromLocal8Bit(m_dvec[i].DeviceAddress.c_str())));
 	}
 }
 
 void UpperMoniter::getFileName() {
 	QString curPath = QCoreApplication::applicationDirPath();
-	QString aFileName = QFileDialog::getExistingDirectory(this, u8"Ñ¡ÔñÎÄ¼ş¼Ğ", "/");
+	QString aFileName = QFileDialog::getExistingDirectory(this, u8"é€‰æ‹©æ–‡ä»¶å¤¹", "/");
 	for (size_t i = 0; i < m_dvec.size(); i++)
 	{
 		m_dvec[i].save2Excel(aFileName.toStdString());
 	}
-	QMessageBox::about(this, tr("tip"), u8"±£´æ³É¹¦");
+	QMessageBox::about(this, tr("tip"), u8"ä¿å­˜æˆåŠŸ");
 }
 
 void UpperMoniter::serial_connect()
@@ -90,31 +90,31 @@ void UpperMoniter::serial_connect()
 	
 	if (ui.openSerialPushButton->isCheckable())
 	{
-		//´ò¿ª´®¿Ú
+		//æ‰“å¼€ä¸²å£
 		if (ui.openSerialPushButton->isChecked())
 		{
-			/*²åÈë´úÂë*/
-			if(!m_serialPort->open(QIODevice::ReadWrite))//ÓÃReadWrite µÄÄ£Ê½³¢ÊÔ´ò¿ª´®¿Ú
+			/*æ’å…¥ä»£ç */
+			if(!m_serialPort->open(QIODevice::ReadWrite))//ç”¨ReadWrite çš„æ¨¡å¼å°è¯•æ‰“å¼€ä¸²å£
 			{
-				qDebug()<<Serial<<"´ò¿ªÊ§°Ü!";
+				qDebug()<<Serial<<"æ‰“å¼€å¤±è´¥!";
 				return;
 			}
-			m_serialPort->setBaudRate(BaudRate,QSerialPort::AllDirections);//ÉèÖÃ²¨ÌØÂÊºÍ¶ÁĞ´·½Ïò
-			m_serialPort->setDataBits(QSerialPort::Data8);      //Êı¾İÎ»Îª8Î»
-			m_serialPort->setFlowControl(QSerialPort::NoFlowControl);//ÎŞÁ÷¿ØÖÆ
-			m_serialPort->setParity(QSerialPort::NoParity); //ÎŞĞ£ÑéÎ»
-			m_serialPort->setStopBits(QSerialPort::OneStop); //Ò»Î»Í£Ö¹Î»
+			m_serialPort->setBaudRate(BaudRate,QSerialPort::AllDirections);//è®¾ç½®æ³¢ç‰¹ç‡å’Œè¯»å†™æ–¹å‘
+			m_serialPort->setDataBits(QSerialPort::Data8);      //æ•°æ®ä½ä¸º8ä½
+			m_serialPort->setFlowControl(QSerialPort::NoFlowControl);//æ— æµæ§åˆ¶
+			m_serialPort->setParity(QSerialPort::NoParity); //æ— æ ¡éªŒä½
+			m_serialPort->setStopBits(QSerialPort::OneStop); //ä¸€ä½åœæ­¢ä½
 			
 			
 
-			ui.openSerialPushButton->setText(QStringLiteral("¹Ø±Õ´®¿Ú"));
+			ui.openSerialPushButton->setText(QStringLiteral("å…³é—­ä¸²å£"));
 		}
-		//¹Ø±Õ´®¿Ú
+		//å…³é—­ä¸²å£
 		else
 		{
-			/*²åÈë´úÂë*/
+			/*æ’å…¥ä»£ç */
 			m_serialPort->close();
-			ui.openSerialPushButton->setText(QStringLiteral("´ò¿ª´®¿Ú"));
+			ui.openSerialPushButton->setText(QStringLiteral("æ‰“å¼€ä¸²å£"));
 		}
 
 	}
@@ -127,13 +127,13 @@ void UpperMoniter::serial_read()
 	QByteArray hexData = m_serialPort->readAll();
 	
 	cout << hexData.toStdString() << endl;
-	for (int i = 0; i < hexData.size(); ++i)      //È¥³ı'\0'
+	for (int i = 0; i < hexData.size(); ++i)      //å»é™¤'\0'
 		if (char(hexData[i]) == 0x00)
 			hexData[i] = 0xff;
 	std::string strbuf=hexData.toStdString();
 
 	QString qstr = QString::fromStdString(strbuf);
-	QStringList qsl = qstr.split("\r\n");		//»®·ÖÊı¾İ°×  ¡®0x0d 0x0a¡¯
+	QStringList qsl = qstr.split("\r\n");		//åˆ’åˆ†æ•°æ®ç™½  â€˜0x0d 0x0aâ€™
 	
 	for(int i = 0; i< qsl.size();++i)	
 	{
@@ -146,7 +146,7 @@ void UpperMoniter::serial_read()
 
 DeviceStatus UpperMoniter::parse_ascii(string data)
 {
-	// for (int i = 0; i < sizeof(data); ++i)      //È¥³ı'\0'
+	// for (int i = 0; i < sizeof(data); ++i)      //å»é™¤'\0'
 	// 	if (data[i] == 0x00)
 	// 		data[i] = 0xff;
 
