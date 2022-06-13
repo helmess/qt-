@@ -47,7 +47,7 @@ UpperMoniter::UpperMoniter(QWidget *parent)
 	ui.openSerialPushButton->setText(QStringLiteral("打开串口"));
 	m_serialPort = new QSerialPort(); //实例化串口类一个对象
 	connect(ui.openSerialPushButton, SIGNAL(clicked()), this, SLOT(serial_connect()));//打开串口
-	connect(ui.queryPushButton, SIGNAL(clicked()), this, SLOT());//点击查询按钮
+	connect(ui.queryPushButton, SIGNAL(clicked()), this, SLOT(queryAndDisplay()));//点击查询按钮
 	connect(ui.exportPushButton, SIGNAL(clicked()), this, SLOT(getFileName()) );//点击导出按钮
 	connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(serial_read()));
 
@@ -55,14 +55,29 @@ UpperMoniter::UpperMoniter(QWidget *parent)
 
 }
 
+void UpperMoniter::queryAndDisplay() {
+	/*清除当前表格内容*/
+	ui.deviceStatusTableWidget->clearContents();
+	ui.deviceStatusTableWidget->setRowCount(m_dvec.size());
+	for (int i = 0; i < m_dvec.size(); i++) {
+		ui.deviceStatusTableWidget->setItem(i, 0, new QTableWidgetItem(tr(m_dvec[i].Date.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 1, new QTableWidgetItem(tr(m_dvec[i].Time.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 2, new QTableWidgetItem(tr(m_dvec[i].Event.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 3, new QTableWidgetItem(tr(m_dvec[i].EventDescription.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 4, new QTableWidgetItem(tr(m_dvec[i].Netaddress.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 5, new QTableWidgetItem(tr(m_dvec[i].Loop.c_str())));
+		ui.deviceStatusTableWidget->setItem(i, 6, new QTableWidgetItem(tr(m_dvec[i].DeviceAddress.c_str())));
+	}
+}
 
 void UpperMoniter::getFileName() {
 	QString curPath = QCoreApplication::applicationDirPath();
-	QString aFileName = QFileDialog::getOpenFileName(this, u8"选择文件", curPath, tr(";;All file(*.*)"));
+	QString aFileName = QFileDialog::getExistingDirectory(this, u8"选择文件夹", "/");
 	for (size_t i = 0; i < m_dvec.size(); i++)
 	{
 		m_dvec[i].save2Excel(aFileName.toStdString());
 	}
+	QMessageBox::about(this, tr("tip"), u8"保存成功");
 }
 
 void UpperMoniter::serial_connect()

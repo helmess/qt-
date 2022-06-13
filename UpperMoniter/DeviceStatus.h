@@ -21,6 +21,7 @@
 	{
 	public:
 		DeviceStatus();
+		DeviceStatus(std::string&, std::string&, std::string&, std::string&, std::string&, std::string&, std::string&);
 		~DeviceStatus();
 
 		std::string getDate(void);

@@ -4,6 +4,7 @@
 *	完成日期：
 ******************************************************************/
 #include"DeviceStatus.h"
+#include<Windows.h>
 
 
 DeviceStatus::DeviceStatus(void)
@@ -16,6 +17,11 @@ DeviceStatus::DeviceStatus(void)
 	Loop = "NULL";
 	DeviceAddress = "NULL";
 	
+}
+
+DeviceStatus::DeviceStatus(std::string& _Date, std::string& _Time, std::string& _Event, std::string& _EventDescription, std::string& _Netaddress, std::string& _Loop, std::string& _DeviceAddress) :
+	Date(_Date), Time(_Time), Event(_Event), EventDescription(_EventDescription), Netaddress(_Netaddress), Loop(_Loop), DeviceAddress(_DeviceAddress) {
+
 }
 
 DeviceStatus::~DeviceStatus(void)
@@ -69,7 +75,9 @@ void DeviceStatus::setDeviceAddres(std::string str) {
 }
 bool DeviceStatus::save2Excel(std::string address) {
 	std::ofstream oFile;
-	oFile.open(address, std::ios::app | std::ios::out);
+	SYSTEMTIME sys;
+	GetLocalTime(&sys);
+	oFile.open(address + "/" + std::to_string(sys.wYear) + "-" + std::to_string(sys.wMonth) + "-" + std::to_string(sys.wDay) + ".csv", std::ios::app | std::ios::out);
 	oFile << Date << "," << Time << "," << Event << "," << EventDescription << "," << "'" + Netaddress << "," << "'" + Loop << "," << "'" + DeviceAddress << std::endl;
 	oFile.close();
 	return true;

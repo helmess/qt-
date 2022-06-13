@@ -23,6 +23,7 @@ public slots:
 	void serial_connect();//´®¿ÚÁ´½Ó
 	void getFileName();
 	void serial_read();
+	void queryAndDisplay();
 public :
 	
 	
