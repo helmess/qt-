@@ -125,22 +125,40 @@ void UpperMoniter::serial_connect()
 void UpperMoniter::serial_read()
 {
 	QByteArray hexData = m_serialPort->readAll();
-	
+	for (int i = 0; i < hexData.size(); i++)
+	{
+		unsigned char ch = unsigned char(hexData[i]);
+		printf("%x ", ch);
+	}
+	cout << endl;
+
 	cout << hexData.toStdString() << endl;
 	for (int i = 0; i < hexData.size(); ++i)      //去除'\0'
 		if (char(hexData[i]) == 0x00)
 			hexData[i] = 0xff;
 	std::string strbuf=hexData.toStdString();
 
-	QString qstr = QString::fromStdString(strbuf);
-	QStringList qsl = qstr.split("\r\n");		//划分数据白  ‘0x0d 0x0a’
+	//QString qstr = QString::fromStdString(strbuf);
+	//QStringList qsl = qstr.split("\r\n");		//划分数据白  ‘0x0d 0x0a’
 	
-	for(int i = 0; i< qsl.size();++i)	
+	/*for(int i = 0; i< qsl.size();++i)	
 	{
 		QString data = qsl.at(i);
 		parse_ascii(data.toStdString());
 		qDebug()<<"data ="<< data<<"\r\n"; 
+	}*/
+
+	auto pos = strbuf.find("\r\n");
+	while (pos!=string::npos)
+	{
+		auto s1 = strbuf.substr(0,pos);
+		parse_ascii(s1);
+		auto res_str = strbuf.substr(pos + 2);
+		strbuf = res_str;
+		pos = strbuf.find("\r\n");
+
 	}
+//	parse_ascii(strbuf);
 	
 }
 
@@ -151,12 +169,19 @@ DeviceStatus UpperMoniter::parse_ascii(string data)
 	// 		data[i] = 0xff;
 
 	// std::string b((char *)(data));
+	for (size_t i = 0; i < data.size(); i++)
+	{
+		unsigned char ch = data[i];
+		printf("%x ", ch);
+
+	}
 	DeviceData a(data);
+	cout << a.Event << endl;
 	DeviceStatus device;
 	device.setDate(a.Date);
 	device.setDeviceAddres(a.DeviceAddress);
-	device.setEvent(a.Event);
-	device.setEventDescription(a.EventDescription);
+	device.setEvent(QString::fromLocal8Bit(a.Event.c_str()).toStdString());
+	device.setEventDescription(QString::fromLocal8Bit(a.EventDescription.c_str()).toStdString());
 	device.setLoop(a.Loop);
 	device.setNetaddress(a.NetAddress);
 	device.setTime(a.Time);
